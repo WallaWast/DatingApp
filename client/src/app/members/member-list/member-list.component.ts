@@ -33,7 +33,7 @@ export class MemberListComponent implements OnInit {
   }
 
   loadMembers() {
-    this.memberService.setUSerParams(this.userParams);
+    this.memberService.setUserParams(this.userParams);
 
     this.memberService.getMembers(this.userParams).subscribe((response) => {
       this.members = response.result;
@@ -48,7 +48,7 @@ export class MemberListComponent implements OnInit {
 
   pageChanged(event: any) {
     this.userParams.pageNumber = event.page;
-    this.memberService.setUSerParams(this.userParams);
+    this.memberService.setUserParams(this.userParams);
     this.loadMembers();
   }
 }

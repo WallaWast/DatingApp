@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { LikeParams } from '../_models/likeParams';
 import { Member } from '../_models/member';
 import { PaginatedResult } from '../_models/pagination';
 import { User } from '../_models/user';
@@ -17,6 +18,7 @@ export class MembersService {
   members: Member[] = [];
   memberCache = new Map();
   userParams: UserParams;
+  likeParams: LikeParams;
   user: User;
 
   constructor(
@@ -26,6 +28,7 @@ export class MembersService {
     this.accountService.currentUser$.pipe(take(1)).subscribe((user) => {
       this.user = user;
       this.userParams = new UserParams(user);
+      this.likeParams = new LikeParams();
     });
   }
 
@@ -33,13 +36,26 @@ export class MembersService {
     return this.userParams;
   }
 
-  setUSerParams(params: UserParams) {
+  setUserParams(params: UserParams) {
     this.userParams = params;
   }
 
   resetUserParams() {
     this.userParams = new UserParams(this.user);
     return this.userParams;
+  }
+
+  getLikeParams() {
+    return this.likeParams;
+  }
+
+  setLikeParams(params: LikeParams) {
+    this.likeParams = params;
+  }
+
+  resetLikeParams() {
+    this.likeParams = new LikeParams();
+    return this.likeParams;
   }
 
   getMembers(userParams: UserParams) {
@@ -105,6 +121,25 @@ export class MembersService {
 
   deletePhoto(photoId: number) {
     return this.http.delete(this.baseUrl + 'users/delete-photo/' + photoId);
+  }
+
+  addLike(username: string) {
+    return this.http.post(this.baseUrl + 'likes/' + username, {});
+  }
+
+  getLikes(likeParams: LikeParams) {
+    let params = this.getPaginationHeader(
+      likeParams.pageNumber,
+      likeParams.pageSize
+    );
+
+    params = params.append('predicate', likeParams.predicate);
+    params = params.append('orderBy', likeParams.orderBy);
+
+    return this.getPaginatedResult<Partial<Member[]>>(
+      this.baseUrl + 'likes',
+      params
+    );
   }
 
   private getPaginatedResult<T>(url: string, params: HttpParams) {
