@@ -1,12 +1,14 @@
 <div class="card">
-  <div class="card-body">
+  <div
+    class="card-body"
+    #scrollMe
+    style="overflow: scroll; height: 535px"
+    [scrollTop]="scrollMe.scrollHeight"
+  >
     <div *ngIf="(messageService.messageThread$ | async)?.length === 0">
       No messages yet... Say hi by using the message box below
     </div>
     <ul
-      #scrollMe
-      style="overflow: scroll; height: 500px"
-      [scrollTop]="scrollMe.scrollHeight"
       *ngIf="(messageService.messageThread$ | async)?.length > 0"
       class="chat"
     >
@@ -62,12 +64,12 @@
         />
         <div class="input-group-append">
           <button
-            [disabled]="!messageForm.valid"
+            [disabled]="!messageForm.valid || loading"
             class="btn btn-primary"
             type="submit"
           >
             Send
-            <i class="fa fa-spinner fa-spin"></i>
+            <i *ngIf="loading" class="fa fa-spinner fa-spin"></i>
           </button>
         </div>
       </div>
