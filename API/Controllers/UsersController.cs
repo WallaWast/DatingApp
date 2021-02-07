@@ -75,7 +75,7 @@ namespace API.Controllers
 
             if (await _unityOfWork.Complete()) return NoContent();
 
-            return BadRequest("Failed to update user");
+            return BadRequest("Failed to update the user");
         }
 
         [HttpPost("add-photo")]
