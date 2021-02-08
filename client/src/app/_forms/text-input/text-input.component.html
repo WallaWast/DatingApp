@@ -10,6 +10,12 @@
     Please enter a
     {{ label }}
   </div>
+  <div *ngIf="ngControl.control.errors?.email" class="invalid-feedback">
+    Please enter a valid email
+  </div>
+  <div *ngIf="ngControl.control.errors?.pattern" class="invalid-feedback">
+    Invalid email format
+  </div>
   <div *ngIf="ngControl.control.errors?.minlength" class="invalid-feedback">
     {{ label }} must be at least
     {{ ngControl.errors?.minlength["requiredLength"] }}

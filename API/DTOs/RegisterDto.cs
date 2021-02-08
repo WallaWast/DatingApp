@@ -15,6 +15,12 @@ namespace API.DTOs
         public string Gender { get; set; }
 
         [Required]
+        [DataType(DataType.EmailAddress, ErrorMessage = "Invalid email.")]
+        [EmailAddress(ErrorMessage = "Invalid email.")]
+
+        public string Email { get; set; }
+
+        [Required]
         public DateTime DateOfBirth { get; set; }
 
         [Required]

@@ -1,14 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
-  FormControl,
   FormGroup,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
 import { AccountService } from '../_services/account.service';
 
 @Component({
@@ -24,7 +22,6 @@ export class RegisterComponent implements OnInit {
 
   constructor(
     private accountService: AccountService,
-    private toastr: ToastrService,
     private fb: FormBuilder,
     private router: Router
   ) {}
@@ -40,6 +37,14 @@ export class RegisterComponent implements OnInit {
       gender: ['male'],
       username: ['', Validators.required],
       knownAs: ['', Validators.required],
+      email: [
+        '',
+        [
+          Validators.required,
+          Validators.email,
+          Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+        ],
+      ],
       dateOfBirth: ['', Validators.required],
       city: ['', Validators.required],
       country: ['', Validators.required],
@@ -68,7 +73,7 @@ export class RegisterComponent implements OnInit {
 
   register() {
     this.accountService.register(this.registerForm.value).subscribe(
-      (response) => {
+      () => {
         this.router.navigateByUrl('/members');
       },
       (error) => {
