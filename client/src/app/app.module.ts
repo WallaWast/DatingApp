@@ -33,6 +33,7 @@ import { UserManagementComponent } from './admin/user-management/user-management
 import { PhotoManagementComponent } from './admin/photo-management/photo-management.component';
 import { RolesModalComponent } from './modals/roles-modal/roles-modal.component';
 import { ConfirmDialogComponent } from './modals/confirm-dialog/confirm-dialog.component';
+import { GeoDbFreeModule } from 'wft-geodb-angular-client';
 
 @NgModule({
   declarations: [
@@ -69,6 +70,10 @@ import { ConfirmDialogComponent } from './modals/confirm-dialog/confirm-dialog.c
     ReactiveFormsModule,
     SharedModule,
     NgxSpinnerModule,
+    GeoDbFreeModule.forRoot({
+      apiKey: null,
+      serviceUri: 'http://geodb-free-service.wirefreethought.com',
+    }),
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },

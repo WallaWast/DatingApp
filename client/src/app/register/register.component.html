@@ -1,4 +1,8 @@
-<form [formGroup]="registerForm" (ngSubmit)="registerForm.valid && register()" autocomplete="off">
+<form
+  [formGroup]="registerForm"
+  (ngSubmit)="registerForm.valid && register()"
+  autocomplete="off"
+>
   <h2 class="text-center text-primary">Sign up</h2>
   <hr />
 
@@ -27,15 +31,36 @@
     [label]="'Known As'"
   ></app-text-input>
   <app-text-input
-  [formControl]="registerForm.controls['email']"
-  [label]="'Email'"
-  [type]="'email'"
-></app-text-input>
+    [formControl]="registerForm.controls['email']"
+    [label]="'Email'"
+    [type]="'email'"
+  ></app-text-input>
   <app-date-input
     [formControl]="registerForm.controls['dateOfBirth']"
     [label]="'Date Of Birth'"
     [maxDate]="maxDate"
   ></app-date-input>
+  <!-- <mat-form-field style="width: 100%">
+    <input
+      matInput
+      type="text"
+      class="form-control"
+      placeholder="Begin typing a city name"
+      aria-label="City"
+      [formControl]="cityControl"
+      [matAutocomplete]="autoCity"
+    />
+
+    <mat-autocomplete
+      #autoCity="matAutocomplete"
+      (optionSelected)="onCitySelected($event.option.value)"
+      [displayWith]="getCityDisplayName"
+    >
+      <mat-option *ngFor="let city of filteredCities | async" [value]="city">
+        {{ getCityDisplayName(city) }}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field> -->
   <app-text-input
     [formControl]="registerForm.controls['city']"
     [label]="'City'"
@@ -62,7 +87,13 @@
     </ul>
   </div>
   <div class="form-group text-center">
-    <button [disabled]='!registerForm.valid' class="btn btn-success mr-2" type="submit">Register</button>
+    <button
+      [disabled]="!registerForm.valid"
+      class="btn btn-success mr-2"
+      type="submit"
+    >
+      Register
+    </button>
     <button class="btn btn-default mr-2" (click)="cancel()" type="button">
       Cancel
     </button>

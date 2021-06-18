@@ -3,11 +3,20 @@ import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  FormControl,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Observable, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { AccountService } from '../_services/account.service';
+
+import { GeoDbService } from 'wft-geodb-angular-client';
+import { PlaceDetails } from 'wft-geodb-angular-client/lib/model/place-details.model';
+import { PlaceSummary } from 'wft-geodb-angular-client/lib/model/place-summary.model';
+import { GeoResponse } from 'wft-geodb-angular-client/lib/model/geo-response.model';
+import { AutoSuggestConstants } from '../_models/autosuggest-constants.class';
 
 @Component({
   selector: 'app-register',
@@ -19,11 +28,16 @@ export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   maxDate: Date;
   validationErrors: string[] = [];
+  private MIN_CITY_POPULATION = 40000;
+  cityControl: FormControl;
+  selectedCity: PlaceDetails;
+  filteredCities: Observable<PlaceSummary[]>;
 
   constructor(
     private accountService: AccountService,
     private fb: FormBuilder,
-    private router: Router
+    private geoDbService: GeoDbService,
+    private router: Router,    
   ) {}
 
   ngOnInit(): void {
@@ -33,6 +47,7 @@ export class RegisterComponent implements OnInit {
   }
 
   initializarForm() {
+    this.cityControl = new FormControl();
     this.registerForm = this.fb.group({
       gender: ['male'],
       username: ['', Validators.required],
@@ -61,6 +76,38 @@ export class RegisterComponent implements OnInit {
     this.registerForm.controls.password.valueChanges.subscribe(() => {
       this.registerForm.controls.confirmPassword.updateValueAndValidity();
     });
+
+    this.filteredCities = this.cityControl.valueChanges.pipe(
+      switchMap((cityNamePrefix: string) => {
+        let citiesObservable: Observable<PlaceSummary[]> = of([]);
+
+        if (
+          cityNamePrefix &&
+          cityNamePrefix.length >= AutoSuggestConstants.MIN_INPUT_LENGTH
+        ) {
+          citiesObservable = this.geoDbService
+            .findPlaces({
+              namePrefix: cityNamePrefix,
+              minPopulation: this.MIN_CITY_POPULATION,
+              types: ['CITY'],
+              sortDirectives: ['-population'],
+              limit: AutoSuggestConstants.MAX_SUGGESTIONS,
+              offset: 0,
+            })
+            .pipe(
+              map(
+                (response: GeoResponse<PlaceSummary[]>) => {
+                  return response.data;
+                },
+
+                (error: any) => console.log(error)
+              )
+            );
+        }
+
+        return citiesObservable;
+      })
+    );
   }
 
   matchValues(matchTo: string): ValidatorFn {
@@ -84,5 +131,32 @@ export class RegisterComponent implements OnInit {
 
   cancel() {
     this.cancelRegister.emit(false);
+  }
+
+  getCityDisplayName(city: PlaceSummary) {
+    if (!city) {
+      return null;
+    }
+
+    let name = city.name;
+
+    if (city.region) {
+      name += ', ' + city.region;
+    }
+
+    name += ', ' + city.country;
+
+    return name;
+  }
+
+  onCitySelected(city: PlaceSummary) {
+    //this.geoDbService
+    // .findPlaces({
+    //  placeId: city.id,
+    // })
+    //.subscribe((response: GeoResponse<PlaceDetails>) => {
+    //this.registerForm.controls.city = city.name;
+    console.log(city);
+    //});
   }
 }
